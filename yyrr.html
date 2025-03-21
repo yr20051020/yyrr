@@ -3,62 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>古诗词生成器</title>
+    <title>古诗生成器</title>
     <style>
         body {
-            font-family: 'KaiTi', serif;
+            font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f5f5dc;
-            padding: 50px;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #8B0000;
+            margin: 50px;
         }
         #poem {
-            font-size: 20px;
-            line-height: 1.8;
+            font-size: 24px;
             margin-top: 20px;
+            font-weight: bold;
+            font-style: italic;
         }
         button {
-            background-color: #8B0000;
-            color: white;
             padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-        }
-        button:hover {
-            background-color: #a52a2a;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>古诗词生成器</h1>
-        <p>点击按钮，随机生成一首古诗词</p>
-        <button onclick="generatePoem()">生成诗词</button>
-        <p id="poem"></p>
-    </div>
+    <h1>随机古诗生成器</h1>
+    <button onclick="generatePoem()">生成古诗</button>
+    <div id="poem"></div>
+
     <script>
         const poems = [
             "床前明月光，疑是地上霜。举头望明月，低头思故乡。",
             "白日依山尽，黄河入海流。欲穷千里目，更上一层楼。",
-            "君自故乡来，应知故乡事。来日绮窗前，寒梅著花未？",
-            "松下问童子，言师采药去。只在此山中，云深不知处。",
-            "黄河远上白云间，一片孤城万仞山。羌笛何须怨杨柳，春风不度玉门关。"
+            "春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。",
+            "山重水复疑无路，柳暗花明又一村。",
+            "黄四娘家花满蹊，千朵万朵压枝低。"
         ];
+
         function generatePoem() {
             const randomIndex = Math.floor(Math.random() * poems.length);
-            document.getElementById("poem").innerText = poems[randomIndex];
+            document.getElementById('poem').innerHTML = poems[randomIndex];
         }
     </script>
 </body>
 </html>
+
