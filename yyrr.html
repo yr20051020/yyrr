@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Recorder & Loop Player</title>
+    <title>Music Recorder with Effects</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,26 +29,38 @@
             margin-top: 20px;
             font-size: 1.2rem;
         }
+        input[type="range"] {
+            width: 300px;
+        }
     </style>
 </head>
 <body>
-    <h1>Music Recorder & Loop Player</h1>
+    <h1>Music Recorder & Loop Player with Effects</h1>
     <button id="startRecord">🎤 Start Recording</button>
     <button id="stopRecord" disabled>⏹️ Stop Recording</button>
     <button id="playLoop" disabled>🔄 Play Loop</button>
     <p id="status">Status: Idle</p>
 
+    <label>Pitch Shift: <span id="pitchValue">0</span> semitones</label>
+    <input type="range" id="pitchShift" min="-12" max="12" value="0">
+
+    <label>Reverb: <span id="reverbValue">0</span></label>
+    <input type="range" id="reverb" min="0" max="1" step="0.1" value="0">
+
     <script>
         let mediaRecorder;
         let audioChunks = [];
-        let audioBlob;
-        let audioUrl;
-        let audio;
+        let recordedBuffer;
+        let player;
 
         const startRecordButton = document.getElementById('startRecord');
         const stopRecordButton = document.getElementById('stopRecord');
         const playLoopButton = document.getElementById('playLoop');
         const statusText = document.getElementById('status');
+        const pitchShiftSlider = document.getElementById('pitchShift');
+        const pitchValue = document.getElementById('pitchValue');
+        const reverbSlider = document.getElementById('reverb');
+        const reverbValue = document.getElementById('reverbValue');
 
         async function startRecording() {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -55,11 +68,14 @@
 
             mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
 
-            mediaRecorder.onstop = () => {
-                audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                audioUrl = URL.createObjectURL(audioBlob);
-                audio = new Audio(audioUrl);
-                audio.loop = true; // Enable loop playback
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const arrayBuffer = await audioBlob.arrayBuffer();
+                recordedBuffer = await Tone.context.decodeAudioData(arrayBuffer);
+
+                player = new Tone.Player(recordedBuffer).toDestination();
+                player.loop = true; // Enable loop playback
+
                 playLoopButton.disabled = false;
             };
 
@@ -79,12 +95,40 @@
             statusText.textContent = 'Status: Recording Stopped';
         }
 
+        function applyEffects() {
+            if (!player) return;
+
+            // 清除之前的效果
+            player.disconnect();
+
+            // 音高变换
+            const pitchShift = new Tone.PitchShift(parseInt(pitchShiftSlider.value)).toDestination();
+
+            // 混响效果
+            const reverb = new Tone.Reverb({ decay: parseFloat(reverbSlider.value) }).toDestination();
+
+            // 连接效果链
+            player.connect(pitchShift);
+            player.connect(reverb);
+        }
+
         function playLoop() {
-            if (audio) {
-                audio.play();
-                statusText.textContent = 'Status: Playing Loop';
+            if (player) {
+                applyEffects();
+                player.start();
+                statusText.textContent = 'Status: Playing Loop with Effects';
             }
         }
+
+        pitchShiftSlider.addEventListener('input', () => {
+            pitchValue.textContent = pitchShiftSlider.value;
+            applyEffects();
+        });
+
+        reverbSlider.addEventListener('input', () => {
+            reverbValue.textContent = reverbSlider.value;
+            applyEffects();
+        });
 
         startRecordButton.addEventListener('click', startRecording);
         stopRecordButton.addEventListener('click', stopRecording);
