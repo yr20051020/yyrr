@@ -1,97 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>晏然的个人简历</title>
+    <title>互动网页</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f4f4f9;
-            color: #333;
-            line-height: 1.6;
+            background-color: #f4f4f9;
             display: flex;
             justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .container {
-            max-width: 800px;
+            text-align: center;
             padding: 20px;
+            background-color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
-        h1, h2 {
-            color: #2c3e50;
-        }
-        .section {
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
             margin-bottom: 20px;
+            width: 80%;
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-        .contact-info p {
-            margin: 5px 0;
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        ul {
-            list-style: none;
-            padding: 0;
+        button:hover {
+            background-color: #4cae4c;
         }
-        ul li::before {
-            content: "✔";
-            margin-right: 8px;
-            color: #3498db;
+        .output {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <header>
-            <h1>晏然</h1>
-            <p>未来的新闻与媒体行业从业者</p>
-        </header>
-
-        <section class="section contact-info">
-            <h2>联系方式</h2>
-            <p>📧 邮箱: your-email@example.com</p>
-            <p>📞 电话: 123-456-7890</p>
-            <p>📍 地址: 中国</p>
-        </section>
-
-        <section class="section">
-            <h2>个人简介</h2>
-            <p>我对新闻与媒体充满热情，擅长内容创作、编辑与策划，具备良好的沟通能力与团队合作精神，致力于成为一名优秀的媒体人。</p>
-        </section>
-
-        <section class="section">
-            <h2>技能</h2>
-            <ul>
-                <li>新闻写作与编辑</li>
-                <li>多媒体内容制作（音频、视频剪辑）</li>
-                <li>社交媒体运营与推广</li>
-                <li>数据分析与调查研究</li>
-                <li>熟练使用 HTML、CSS、JavaScript</li>
-            </ul>
-        </section>
-
-        <section class="section">
-            <h2>工作经验</h2>
-            <p><strong>实习生 - 某新闻机构</strong> (20XX.XX - 20XX.XX)</p>
-            <ul>
-                <li>协助记者进行新闻采编与资料整理</li>
-                <li>撰写新闻稿并优化标题，提高文章点击率</li>
-                <li>参与媒体活动的策划与执行</li>
-            </ul>
-        </section>
-
-        <section class="section">
-            <h2>教育背景</h2>
-            <p><strong>新闻与传播专业 - 某知名大学</strong> (20XX - 20XX)</p>
-            <ul>
-                <li>主修新闻学、传播学、媒体技术</li>
-                <li>多次参与校内新闻社团，积累实战经验</li>
-            </ul>
-        </section>
-
-        <footer>
-            <p>感谢您的浏览，期待与您合作！</p>
-        </footer>
+        <h2>欢迎来到互动网页</h2>
+        <input type="text" id="userInput" placeholder="输入一些文字...">
+        <button onclick="updateContent()">提交</button>
+        <div class="output" id="output"></div>
     </div>
+
+    <script>
+        function updateContent() {
+            var userInput = document.getElementById('userInput').value;
+            if(userInput) {
+                document.getElementById('output').innerHTML = "你输入的内容是: " + userInput;
+            } else {
+                document.getElementById('output').innerHTML = "请输入一些文字！";
+            }
+        }
+    </script>
+
 </body>
 </html>
 
