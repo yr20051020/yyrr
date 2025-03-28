@@ -3,136 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Recorder with Effects</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <title>晏然的个人简历</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
             margin: 0;
+            padding: 0;
             background: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
         }
-        button {
-            margin: 10px;
-            padding: 10px 20px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            border: none;
-            border-radius: 8px;
-            transition: background 0.3s;
+        .container {
+            max-width: 800px;
+            padding: 20px;
         }
-        #status {
-            margin-top: 20px;
-            font-size: 1.2rem;
+        h1, h2 {
+            color: #2c3e50;
         }
-        input[type="range"] {
-            width: 300px;
+        .section {
+            margin-bottom: 20px;
+        }
+        .contact-info p {
+            margin: 5px 0;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li::before {
+            content: "✔";
+            margin-right: 8px;
+            color: #3498db;
         }
     </style>
 </head>
 <body>
-    <h1>Music Recorder & Loop Player with Effects</h1>
-    <button id="startRecord">🎤 Start Recording</button>
-    <button id="stopRecord" disabled>⏹️ Stop Recording</button>
-    <button id="playLoop" disabled>🔄 Play Loop</button>
-    <p id="status">Status: Idle</p>
+    <div class="container">
+        <header>
+            <h1>晏然</h1>
+            <p>未来的新闻与媒体行业从业者</p>
+        </header>
 
-    <label>Pitch Shift: <span id="pitchValue">0</span> semitones</label>
-    <input type="range" id="pitchShift" min="-12" max="12" value="0">
+        <section class="section contact-info">
+            <h2>联系方式</h2>
+            <p>📧 邮箱: your-email@example.com</p>
+            <p>📞 电话: 123-456-7890</p>
+            <p>📍 地址: 中国</p>
+        </section>
 
-    <label>Reverb: <span id="reverbValue">0</span></label>
-    <input type="range" id="reverb" min="0" max="1" step="0.1" value="0">
+        <section class="section">
+            <h2>个人简介</h2>
+            <p>我对新闻与媒体充满热情，擅长内容创作、编辑与策划，具备良好的沟通能力与团队合作精神，致力于成为一名优秀的媒体人。</p>
+        </section>
 
-    <script>
-        let mediaRecorder;
-        let audioChunks = [];
-        let recordedBuffer;
-        let player;
+        <section class="section">
+            <h2>技能</h2>
+            <ul>
+                <li>新闻写作与编辑</li>
+                <li>多媒体内容制作（音频、视频剪辑）</li>
+                <li>社交媒体运营与推广</li>
+                <li>数据分析与调查研究</li>
+                <li>熟练使用 HTML、CSS、JavaScript</li>
+            </ul>
+        </section>
 
-        const startRecordButton = document.getElementById('startRecord');
-        const stopRecordButton = document.getElementById('stopRecord');
-        const playLoopButton = document.getElementById('playLoop');
-        const statusText = document.getElementById('status');
-        const pitchShiftSlider = document.getElementById('pitchShift');
-        const pitchValue = document.getElementById('pitchValue');
-        const reverbSlider = document.getElementById('reverb');
-        const reverbValue = document.getElementById('reverbValue');
+        <section class="section">
+            <h2>工作经验</h2>
+            <p><strong>实习生 - 某新闻机构</strong> (20XX.XX - 20XX.XX)</p>
+            <ul>
+                <li>协助记者进行新闻采编与资料整理</li>
+                <li>撰写新闻稿并优化标题，提高文章点击率</li>
+                <li>参与媒体活动的策划与执行</li>
+            </ul>
+        </section>
 
-        async function startRecording() {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
+        <section class="section">
+            <h2>教育背景</h2>
+            <p><strong>新闻与传播专业 - 某知名大学</strong> (20XX - 20XX)</p>
+            <ul>
+                <li>主修新闻学、传播学、媒体技术</li>
+                <li>多次参与校内新闻社团，积累实战经验</li>
+            </ul>
+        </section>
 
-            mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
-
-            mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                const arrayBuffer = await audioBlob.arrayBuffer();
-                recordedBuffer = await Tone.context.decodeAudioData(arrayBuffer);
-
-                player = new Tone.Player(recordedBuffer).toDestination();
-                player.loop = true; // Enable loop playback
-
-                playLoopButton.disabled = false;
-            };
-
-            audioChunks = [];
-            mediaRecorder.start();
-
-            startRecordButton.disabled = true;
-            stopRecordButton.disabled = false;
-            statusText.textContent = 'Status: Recording...';
-        }
-
-        function stopRecording() {
-            mediaRecorder.stop();
-
-            startRecordButton.disabled = false;
-            stopRecordButton.disabled = true;
-            statusText.textContent = 'Status: Recording Stopped';
-        }
-
-        function applyEffects() {
-            if (!player) return;
-
-            // 清除之前的效果
-            player.disconnect();
-
-            // 音高变换
-            const pitchShift = new Tone.PitchShift(parseInt(pitchShiftSlider.value)).toDestination();
-
-            // 混响效果
-            const reverb = new Tone.Reverb({ decay: parseFloat(reverbSlider.value) }).toDestination();
-
-            // 连接效果链
-            player.connect(pitchShift);
-            player.connect(reverb);
-        }
-
-        function playLoop() {
-            if (player) {
-                applyEffects();
-                player.start();
-                statusText.textContent = 'Status: Playing Loop with Effects';
-            }
-        }
-
-        pitchShiftSlider.addEventListener('input', () => {
-            pitchValue.textContent = pitchShiftSlider.value;
-            applyEffects();
-        });
-
-        reverbSlider.addEventListener('input', () => {
-            reverbValue.textContent = reverbSlider.value;
-            applyEffects();
-        });
-
-        startRecordButton.addEventListener('click', startRecording);
-        stopRecordButton.addEventListener('click', stopRecording);
-        playLoopButton.addEventListener('click', playLoop);
-    </script>
+        <footer>
+            <p>感谢您的浏览，期待与您合作！</p>
+        </footer>
+    </div>
 </body>
 </html>
+
