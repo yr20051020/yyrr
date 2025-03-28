@@ -1,47 +1,94 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>古诗生成器</title>
+    <title>Music Recorder & Loop Player</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        #poem {
-            font-size: 24px;
-            margin-top: 20px;
-            font-weight: bold;
-            font-style: italic;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #f4f4f9;
         }
         button {
+            margin: 10px;
             padding: 10px 20px;
-            font-size: 16px;
+            font-size: 1.2rem;
             cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 1.2rem;
         }
     </style>
 </head>
 <body>
-    <h1>随机古诗生成器</h1>
-    <button onclick="generatePoem()">生成古诗</button>
-    <div id="poem"></div>
+    <h1>Music Recorder & Loop Player</h1>
+    <button id="startRecord">🎤 Start Recording</button>
+    <button id="stopRecord" disabled>⏹️ Stop Recording</button>
+    <button id="playLoop" disabled>🔄 Play Loop</button>
+    <p id="status">Status: Idle</p>
 
     <script>
-        const poems = [
-            "床前明月光，疑是地上霜。举头望明月，低头思故乡。",
-            "白日依山尽，黄河入海流。欲穷千里目，更上一层楼。",
-            "春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。",
-            "山重水复疑无路，柳暗花明又一村。",
-            "黄四娘家花满蹊，千朵万朵压枝低。"
-        ];
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioBlob;
+        let audioUrl;
+        let audio;
 
-        function generatePoem() {
-            const randomIndex = Math.floor(Math.random() * poems.length);
-            document.getElementById('poem').innerHTML = poems[randomIndex];
+        const startRecordButton = document.getElementById('startRecord');
+        const stopRecordButton = document.getElementById('stopRecord');
+        const playLoopButton = document.getElementById('playLoop');
+        const statusText = document.getElementById('status');
+
+        async function startRecording() {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+
+            mediaRecorder.onstop = () => {
+                audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                audioUrl = URL.createObjectURL(audioBlob);
+                audio = new Audio(audioUrl);
+                audio.loop = true; // Enable loop playback
+                playLoopButton.disabled = false;
+            };
+
+            audioChunks = [];
+            mediaRecorder.start();
+
+            startRecordButton.disabled = true;
+            stopRecordButton.disabled = false;
+            statusText.textContent = 'Status: Recording...';
         }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+
+            startRecordButton.disabled = false;
+            stopRecordButton.disabled = true;
+            statusText.textContent = 'Status: Recording Stopped';
+        }
+
+        function playLoop() {
+            if (audio) {
+                audio.play();
+                statusText.textContent = 'Status: Playing Loop';
+            }
+        }
+
+        startRecordButton.addEventListener('click', startRecording);
+        stopRecordButton.addEventListener('click', stopRecording);
+        playLoopButton.addEventListener('click', playLoop);
     </script>
 </body>
 </html>
-
